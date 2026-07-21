@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RJ Parlor & Cosmetics — Dolmundai, Cuttack</title>
+<meta name="description" content="RJ Parlor & Cosmetics — Bridal Makeup, Hair, Skin & Beauty services in Dolmundai, Cuttack. Beauty is our passion, perfection is our promise.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Marcellus&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b0f10;           /* near-black maroon-espresso */
+    --maroon:#5c1327;        /* deep bridal maroon */
+    --maroon-2:#3c0c1a;
+    --gold:#c9a04a;          /* muted antique gold */
+    --gold-light:#e9cf8c;
+    --gold-bright:#f4d98f;
+    --cream:#f7efe1;         /* warm ivory */
+    --cream-dim:#ecdfc4;
+    --line: rgba(201,160,74,0.35);
+    --shadow: 0 20px 60px rgba(0,0,0,0.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--cream);
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Marcellus', serif;
+    letter-spacing:0.02em;
+    font-weight:400;
+  }
+  .script{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+  }
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  ::selection{background:var(--gold);color:var(--ink);}
+
+  /* ---------- scroll reveal ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+  /* ---------- gold flourish rule (signature element) ---------- */
+  .flourish{
+    display:flex;align-items:center;justify-content:center;gap:14px;
+    margin:0 auto;
+  }
+  .flourish svg{width:120px;height:16px;}
+  .flourish path{
+    fill:none;stroke:var(--gold);stroke-width:1.4;
+    stroke-dasharray:220;stroke-dashoffset:220;
+    transition:stroke-dashoffset 1.4s ease;
+  }
+  .reveal.in .flourish path{stroke-dashoffset:0;}
+
+  /* ================= POPUP ================= */
+  .popup-overlay{
+    position:fixed;inset:0;z-index:999;
+    background:rgba(10,4,5,0.85);
+    backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;
+    padding:24px;
+    opacity:0;pointer-events:none;
+    transition:opacity 0.5s ease;
+  }
+  .popup-overlay.show{opacity:1;pointer-events:auto;}
+  .popup-card{
+    position:relative;
+    max-width:420px;width:100%;
+    max-height:88vh;
+    background:var(--cream);
+    border-radius:6px;
+    box-shadow:0 30px 90px rgba(0,0,0,0.6);
+    transform:scale(0.85) translateY(30px);
+    transition:transform 0.55s cubic-bezier(.2,.9,.25,1.15);
+    overflow:hidden;
+    border:2px solid var(--gold);
+  }
+  .popup-overlay.show .popup-card{transform:scale(1) translateY(0);}
+  .popup-scroll{max-height:88vh;overflow-y:auto;}
+  .popup-scroll img{width:100%;height:auto;}
+  .popup-close{
+    position:absolute;top:10px;right:10px;z-index:2;
+    width:34px;height:34px;border-radius:50%;
+    background:var(--maroon);color:var(--gold-light);
+    border:1px solid var(--gold);
+    font-size:18px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform 0.25s ease, background 0.25s ease;
+  }
+  .popup-close:hover{transform:rotate(90deg);background:var(--gold);color:var(--ink);}
+  .popup-cta{
+    display:flex;gap:10px;padding:14px;background:var(--maroon);
+  }
+  .popup-cta a{
+    flex:1;text-align:center;padding:10px 8px;border-radius:3px;
+    font-family:'Jost';font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;
+    border:1px solid var(--gold);
+  }
+  .popup-cta a.primary{background:var(--gold);color:var(--ink);font-weight:500;}
+  .popup-cta a.secondary{color:var(--gold-light);}
+
+  /* ================= NAV ================= */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 5vw;
+    background:linear-gradient(to bottom, rgba(15,7,8,0.92), rgba(15,7,8,0));
+    transition:background 0.4s ease, padding 0.4s ease;
+  }
+  header.scrolled{
+    background:rgba(15,7,8,0.92);
+    backdrop-filter:blur(10px);
+    padding:10px 5vw;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand img{height:42px;width:auto;transition:height 0.3s ease;}
+  header.scrolled .brand img{height:34px;}
+  .brand-text{font-family:'Marcellus';font-size:20px;letter-spacing:0.12em;color:var(--gold-light);}
+  nav ul{list-style:none;display:flex;gap:32px;}
+  nav a{
+    font-size:13px;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--cream-dim);position:relative;padding-bottom:4px;
+  }
+  nav a::after{
+    content:'';position:absolute;left:0;bottom:0;height:1px;width:0;
+    background:var(--gold);transition:width 0.3s ease;
+  }
+  nav a:hover::after{width:100%;}
+  .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+  .nav-toggle span{width:24px;height:1.5px;background:var(--gold-light);}
+
+  /* ================= HERO ================= */
+  .hero{
+    position:relative;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:120px 6vw 80px;
+    background:
+      radial-gradient(ellipse at 20% 15%, rgba(92,19,39,0.55), transparent 55%),
+      radial-gradient(ellipse at 85% 85%, rgba(201,160,74,0.12), transparent 50%),
+      var(--ink);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.06;
+    pointer-events:none;
+  }
+  .hero-logo{
+    width:min(46vw,220px);
+    margin-bottom:18px;
+    opacity:0;
+    animation:heroIn 1.2s ease forwards 0.2s;
+    filter:drop-shadow(0 6px 30px rgba(201,160,74,0.35));
+  }
+  .hero .eyebrow{
+    opacity:0;animation:heroIn 1s ease forwards 0.5s;
+    font-size:12.5px;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold);
+    margin-bottom:18px;
+  }
+  .hero h1{
+    opacity:0;animation:heroIn 1s ease forwards 0.7s;
+    font-size:clamp(38px,7vw,86px);
+    color:var(--cream);
+    line-height:1.02;
+    letter-spacing:0.01em;
+  }
+  .hero h1 em{
+    font-style:italic;font-family:'Cormorant Garamond';color:var(--gold-light);
+  }
+  .hero p.tag{
+    opacity:0;animation:heroIn 1s ease forwards 0.9s;
+    margin-top:20px;font-size:clamp(15px,2vw,19px);
+    color:var(--cream-dim);
+    max-width:520px;
+  }
+  .hero .tag .script{color:var(--gold-light);}
+  @keyframes heroIn{
+    from{opacity:0;transform:translateY(22px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .hero-ctas{
+    opacity:0;animation:heroIn 1s ease forwards 1.1s;
+    margin-top:36px;display:flex;gap:16px;flex-wrap:wrap;justify-content:center;
+  }
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 30px;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;
+    border-radius:2px;cursor:pointer;transition:transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn-gold{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--ink);font-weight:500;box-shadow:0 10px 30px rgba(201,160,74,0.25);}
+  .btn-gold:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(201,160,74,0.4);}
+  .btn-line{border:1px solid var(--gold);color:var(--gold-light);}
+  .btn-line:hover{background:rgba(201,160,74,0.1);transform:translateY(-3px);}
+
+  .scroll-cue{
+    position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    opacity:0.6;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold-light);
+  }
+  .scroll-cue .stick{width:1px;height:34px;background:linear-gradient(var(--gold),transparent);animation:scrollCue 1.8s ease-in-out infinite;}
+  @keyframes scrollCue{0%{transform:scaleY(0.3);opacity:0.3;}50%{transform:scaleY(1);opacity:1;}100%{transform:scaleY(0.3);opacity:0.3;}}
+
+  /* ================= MARQUEE STRIP ================= */
+  .marquee{
+    background:var(--maroon);
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    overflow:hidden;padding:12px 0;
+  }
+  .marquee-track{
+    display:flex;gap:48px;white-space:nowrap;width:max-content;
+    animation:marquee 26s linear infinite;
+  }
+  .marquee-track span{
+    font-family:'Marcellus';font-size:14px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-light);
+    display:flex;align-items:center;gap:48px;
+  }
+  .marquee-track span::after{content:'✦';color:var(--gold);margin-left:48px;}
+  @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ================= SECTION SHARED ================= */
+  section{padding:110px 6vw;position:relative;}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 60px;}
+  .section-head .eyebrow{
+    font-size:12px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);
+    margin-bottom:14px;
+  }
+  .section-head h2{font-size:clamp(30px,4.5vw,50px);color:var(--cream);}
+  .section-head p{margin-top:16px;color:var(--cream-dim);font-size:16px;line-height:1.7;}
+
+  /* ================= SERVICES ================= */
+  .services{background:linear-gradient(180deg, var(--ink), var(--maroon-2) 50%, var(--ink));}
+  .service-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    max-width:1180px;margin:0 auto;
+  }
+  .service-card{
+    background:var(--ink);padding:44px 30px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    transition:background 0.4s ease, transform 0.4s ease;
+    cursor:default;
+  }
+  .service-card:hover{background:var(--maroon-2);transform:translateY(-6px);}
+  .service-icon{
+    width:64px;height:64px;border-radius:50%;
+    border:1px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:22px;transition:transform 0.4s ease, box-shadow 0.4s ease;
+    background:radial-gradient(circle at 35% 30%, rgba(201,160,74,0.16), transparent 70%);
+  }
+  .service-card:hover .service-icon{transform:scale(1.08) rotate(-4deg);box-shadow:0 0 24px rgba(201,160,74,0.35);}
+  .service-icon svg{width:28px;height:28px;stroke:var(--gold-light);fill:none;stroke-width:1.3;}
+  .service-card h3{font-size:20px;color:var(--gold-light);margin-bottom:18px;letter-spacing:0.04em;}
+  .service-card ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .service-card li{
+    font-size:14.5px;color:var(--cream-dim);position:relative;padding-left:16px;
+  }
+  .service-card li::before{
+    content:'';position:absolute;left:0;top:9px;width:6px;height:1px;background:var(--gold);
+  }
+
+  /* ================= VISUAL SERVICES GALLERY ================= */
+  .gallery-services{
+    background:var(--ink);
+    border-top:1px solid var(--line);
+  }
+  .bento{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-template-rows:repeat(2,220px);
+    gap:14px;
+    max-width:1180px;margin:0 auto;
+  }
+  .bento-tile{
+    position:relative;display:block;overflow:hidden;border-radius:6px;
+    border:1px solid var(--line);
+    box-shadow:0 14px 34px rgba(0,0,0,0.35);
+  }
+  .bento-tile img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transition:transform 0.8s ease, filter 0.5s ease;
+    filter:saturate(0.94);
+  }
+  .bento-tile:hover img{transform:scale(1.09);filter:saturate(1.05);}
+  .tile-shade{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(10,4,5,0) 35%, rgba(10,4,5,0.88) 100%);
+    transition:background 0.4s ease;
+  }
+  .bento-tile:hover .tile-shade{background:linear-gradient(180deg, rgba(10,4,5,0.1) 20%, rgba(10,4,5,0.92) 100%);}
+  .tile-text{position:absolute;left:0;right:0;bottom:0;padding:20px 22px;}
+  .tile-eyebrow{
+    font-size:10.5px;letter-spacing:0.26em;text-transform:uppercase;color:var(--gold-light);
+    display:inline-block;transform:translateY(0);transition:transform 0.4s ease;
+  }
+  .tile-text h3{
+    margin-top:6px;font-size:20px;color:var(--cream);letter-spacing:0.02em;
+  }
+  .tile-text p{
+    margin-top:5px;font-size:12px;color:var(--cream-dim);letter-spacing:0.03em;
+    max-height:0;opacity:0;overflow:hidden;transition:max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease;
+  }
+  .bento-tile:hover .tile-text p{max-height:40px;opacity:1;margin-top:6px;}
+
+  .tile-makeup{grid-column:1;grid-row:1/3;}
+  .tile-skin{grid-column:2;grid-row:1/3;}
+  .tile-hair{grid-column:3;grid-row:1;}
+  .tile-beauty{grid-column:3;grid-row:2;}
+
+  .bento-cta{
+    grid-column:4;grid-row:1/3;
+    position:relative;overflow:hidden;border-radius:6px;
+    background:linear-gradient(160deg,var(--gold-bright),var(--gold) 62%,#a9822f);
+    color:var(--ink);display:flex;flex-direction:column;justify-content:space-between;
+    padding:26px 22px;transition:transform 0.4s ease, box-shadow 0.4s ease;
+    box-shadow:0 14px 34px rgba(0,0,0,0.35);
+  }
+  .bento-cta:hover{transform:translateY(-6px);box-shadow:0 20px 46px rgba(201,160,74,0.35);}
+  .bento-cta::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(circle at 85% 105%, rgba(255,255,255,0.4), transparent 60%);
+  }
+  .bento-cta .eyebrow{position:relative;font-size:10.5px;letter-spacing:0.26em;text-transform:uppercase;opacity:0.72;}
+  .bento-cta h3{position:relative;font-family:'Marcellus';font-size:23px;margin-top:10px;line-height:1.18;}
+  .bento-cta p{position:relative;margin-top:8px;font-size:12.5px;opacity:0.85;}
+  .cta-arrow{
+    position:relative;margin-top:auto;width:42px;height:42px;border-radius:50%;
+    background:var(--ink);color:var(--gold-light);display:flex;align-items:center;justify-content:center;
+    font-size:18px;transition:transform 0.4s ease;
+  }
+  .bento-cta:hover .cta-arrow{transform:translateX(6px);}
+
+  @media (max-width:900px){
+    .bento{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,230px) 130px;}
+    .tile-makeup{grid-column:1;grid-row:1;}
+    .tile-skin{grid-column:2;grid-row:1;}
+    .tile-hair{grid-column:1;grid-row:2;}
+    .tile-beauty{grid-column:2;grid-row:2;}
+    .bento-cta{grid-column:1/3;grid-row:3;flex-direction:row;align-items:center;justify-content:space-between;}
+    .bento-cta .cta-arrow{margin-top:0;}
+  }
+  @media (max-width:560px){
+    .bento{grid-template-columns:1fr;grid-template-rows:repeat(4,230px) 110px;}
+    .tile-makeup{grid-column:1;grid-row:1;}
+    .tile-skin{grid-column:1;grid-row:2;}
+    .tile-hair{grid-column:1;grid-row:3;}
+    .tile-beauty{grid-column:1;grid-row:4;}
+    .bento-cta{grid-column:1;grid-row:5;}
+  }
+
+  /* ================= OFFER STRIP ================= */
+  .offer{
+    background:var(--maroon);
+    position:relative;overflow:hidden;
+    padding:80px 6vw;
+  }
+  .offer::before{
+    content:'';position:absolute;inset:-40%;
+    background:radial-gradient(circle, rgba(201,160,74,0.18), transparent 60%);
+    animation:pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:0.7;}50%{transform:scale(1.15);opacity:1;}}
+  .offer-inner{position:relative;max-width:1080px;margin:0 auto;text-align:center;}
+  .offer-inner .eyebrow{color:var(--gold-light);font-size:12px;letter-spacing:0.3em;text-transform:uppercase;}
+  .offer-inner h2{font-size:clamp(28px,4vw,44px);margin-top:14px;color:var(--cream);}
+  .offer-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:52px;
+  }
+  .offer-card{
+    background:rgba(0,0,0,0.18);border:1px solid var(--line);
+    border-radius:6px;padding:32px 24px;
+    transition:transform 0.4s ease, border-color 0.4s ease;
+  }
+  .offer-card:hover{transform:translateY(-8px);border-color:var(--gold);}
+  .offer-card .num{font-family:'Marcellus';font-size:13px;color:var(--gold);letter-spacing:0.2em;}
+  .offer-card h3{margin-top:14px;font-size:19px;color:var(--gold-light);}
+  .offer-card p{margin-top:10px;font-size:14px;color:var(--cream-dim);line-height:1.6;}
+  .countdown{
+    margin-top:50px;display:inline-flex;gap:14px;align-items:center;
+    padding:14px 26px;border:1px solid var(--gold);border-radius:40px;
+    font-size:13px;letter-spacing:0.08em;color:var(--gold-light);
+  }
+  .countdown b{color:var(--cream);font-family:'Marcellus';}
+  .dot-pulse{width:7px;height:7px;border-radius:50%;background:#e0554e;animation:blink 1.4s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+  /* ================= WHY / TRUST ================= */
+  .why{background:var(--ink);}
+  .why-grid{
+    max-width:1000px;margin:0 auto;
+    display:grid;grid-template-columns:repeat(3,1fr);gap:40px;text-align:center;
+  }
+  .why-item .why-icon{
+    width:56px;height:56px;margin:0 auto 18px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .why-icon svg{width:34px;height:34px;stroke:var(--gold);fill:none;stroke-width:1.2;}
+  .why-item h3{font-size:17px;color:var(--gold-light);margin-bottom:8px;}
+  .why-item p{font-size:14px;color:var(--cream-dim);line-height:1.6;}
+
+  /* ================= GALLERY / GLIMPSE ================= */
+  .glimpse{
+    background:var(--maroon-2);
+    display:grid;grid-template-columns:1.1fr 1fr;gap:0;
+    padding:0;align-items:stretch;
+  }
+  .glimpse-media{position:relative;overflow:hidden;min-height:480px;}
+  .glimpse-media img{
+    width:100%;height:100%;object-fit:cover;object-position:top;
+    transition:transform 8s ease;
+  }
+  .glimpse:hover .glimpse-media img{transform:scale(1.06);}
+  .glimpse-media::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(90deg, transparent 60%, var(--maroon-2));
+  }
+  .glimpse-text{
+    padding:90px 6vw;display:flex;flex-direction:column;justify-content:center;
+  }
+  .glimpse-text .eyebrow{font-size:12px;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+  .glimpse-text h2{font-size:clamp(28px,4vw,42px);color:var(--cream);line-height:1.15;}
+  .glimpse-text p{margin-top:20px;color:var(--cream-dim);line-height:1.8;font-size:15.5px;max-width:440px;}
+  .glimpse-text .btn{margin-top:32px;align-self:flex-start;}
+
+  /* ================= TESTIMONIAL ================= */
+  .testimonial{
+    text-align:center;padding:100px 6vw;background:var(--ink);
+  }
+  .testimonial blockquote{
+    font-family:'Cormorant Garamond';font-style:italic;
+    font-size:clamp(22px,3vw,34px);max-width:760px;margin:0 auto;color:var(--gold-light);
+    line-height:1.5;
+  }
+  .testimonial cite{
+    display:block;margin-top:24px;font-style:normal;font-size:13px;
+    letter-spacing:0.14em;text-transform:uppercase;color:var(--cream-dim);
+  }
+  .stars{display:flex;justify-content:center;gap:5px;margin-top:26px;}
+  .stars svg{width:16px;height:16px;fill:var(--gold);}
+
+  /* ================= CONTACT ================= */
+  .contact{
+    background:linear-gradient(180deg,var(--maroon-2),var(--ink));
+  }
+  .contact-inner{
+    max-width:1080px;margin:0 auto;
+    display:grid;grid-template-columns:1fr 1fr;gap:70px;
+  }
+  .contact-info h2{font-size:clamp(28px,4vw,42px);color:var(--cream);}
+  .contact-info p.lead{margin-top:18px;color:var(--cream-dim);line-height:1.8;max-width:420px;}
+  .info-list{margin-top:36px;display:flex;flex-direction:column;gap:22px;}
+  .info-row{display:flex;align-items:center;gap:16px;}
+  .info-row .ic{
+    width:44px;height:44px;border-radius:50%;border:1px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .info-row .ic svg{width:20px;height:20px;stroke:var(--gold-light);fill:none;stroke-width:1.4;}
+  .info-row a, .info-row span{font-size:15.5px;color:var(--cream);}
+  .info-row a:hover{color:var(--gold-light);}
+  .info-row small{display:block;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+
+  .contact-card{
+    background:rgba(0,0,0,0.22);border:1px solid var(--line);border-radius:8px;
+    padding:44px 36px;
+  }
+  .contact-card h3{font-size:20px;color:var(--gold-light);margin-bottom:8px;}
+  .contact-card p{font-size:14px;color:var(--cream-dim);margin-bottom:26px;}
+  .contact-actions{display:flex;flex-direction:column;gap:14px;}
+  .contact-actions a{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    padding:15px;border-radius:3px;font-size:13.5px;letter-spacing:0.08em;text-transform:uppercase;
+    transition:transform 0.3s ease;
+  }
+  .contact-actions a:hover{transform:translateY(-2px);}
+  .call-btn{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--ink);font-weight:500;}
+  .wa-btn{background:#1f8a4c;color:#fff;}
+  .map-btn{border:1px solid var(--gold);color:var(--gold-light);}
+  .contact-actions svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;}
+
+  /* ================= FOOTER ================= */
+  footer{
+    padding:50px 6vw 30px;text-align:center;background:var(--ink);
+    border-top:1px solid var(--line);
+  }
+  footer .brand-text{font-size:17px;}
+  footer .flourish{margin:22px auto;}
+  footer p.small{font-size:12px;color:var(--cream-dim);opacity:0.7;margin-top:10px;letter-spacing:0.04em;}
+
+  /* ================= FLOATING WA BUTTON ================= */
+  .float-wa{
+    position:fixed;bottom:26px;right:26px;z-index:150;
+    width:58px;height:58px;border-radius:50%;
+    background:#1f8a4c;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+    animation:floatPulse 2.6s ease-in-out infinite;
+  }
+  .float-wa svg{width:28px;height:28px;fill:#fff;}
+  @keyframes floatPulse{0%,100%{box-shadow:0 10px 30px rgba(31,138,76,0.35);}50%{box-shadow:0 10px 44px rgba(31,138,76,0.65);}}
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width:900px){
+    nav{display:none;position:fixed;top:64px;left:0;right:0;background:var(--maroon-2);border-bottom:1px solid var(--line);}
+    nav.open{display:block;}
+    nav ul{flex-direction:column;padding:26px 6vw;gap:22px;}
+    .nav-toggle{display:flex;}
+    .service-grid{grid-template-columns:repeat(2,1fr);}
+    .glimpse{grid-template-columns:1fr;}
+    .glimpse-media{min-height:320px;order:2;}
+    .glimpse-text{padding:60px 6vw;order:1;}
+    .why-grid{grid-template-columns:1fr;gap:36px;}
+    .offer-grid{grid-template-columns:1fr;}
+    .contact-inner{grid-template-columns:1fr;gap:50px;}
+  }
+  @media (max-width:520px){
+    .service-grid{grid-template-columns:1fr;}
+    section{padding:80px 6vw;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ POPUP ============ -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-card">
+    <div class="popup-close" id="popupClose">&times;</div>
+    <div class="popup-scroll">
+      <img src="assets/poster.jpeg" alt="RJ Parlor & Cosmetics — Special Walk-in Offer">
+    </div>
+    <div class="popup-cta">
+      <a href="tel:+918114312507" class="primary">Call Now</a>
+      <a href="https://wa.me/918249911542" class="secondary" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header id="siteHeader">
+  <div class="brand">
+    <img src="assets/logo.png" alt="RJ Parlor logo">
+    <span class="brand-text">RJ PARLOR</span>
+  </div>
+  <nav id="siteNav">
+    <ul>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#offers">Offers</a></li>
+      <li><a href="#why">Why Us</a></li>
+      <li><a href="#glimpse">Studio</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <img class="hero-logo" src="assets/logo.png" alt="RJ Parlor & Cosmetics">
+  <div class="eyebrow">Dolmundai · Cuttack</div>
+  <h1>Beauty is Our Passion,<br><em>Perfection</em> is Our Promise.</h1>
+  <p class="tag">Bridal artistry, hair, skin & beauty rituals crafted for the moments that matter — <span class="script">come once, and stay forever.</span></p>
+  <div class="hero-ctas">
+    <a href="#contact" class="btn btn-gold">Book Your Visit</a>
+    <a href="#services" class="btn btn-line">Explore Services</a>
+  </div>
+  <div class="scroll-cue"><span>Scroll</span><div class="stick"></div></div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Bridal Makeup</span><span>HD & Airbrush Makeup</span><span>Hair Spa & Nanoplastia</span><span>Skin Treatments</span><span>Manicure · Pedicure</span><span>Home Service Available</span>
+    <span>Bridal Makeup</span><span>HD & Airbrush Makeup</span><span>Hair Spa & Nanoplastia</span><span>Skin Treatments</span><span>Manicure · Pedicure</span><span>Home Service Available</span>
+  </div>
+</div>
+
+<!-- ============ SERVICES ============ -->
+<section class="services" id="services">
+  <div class="section-head reveal">
+    <div class="eyebrow">Our Services</div>
+    <h2>Four Rituals, One Standard of Perfection</h2>
+    <p>Every service is delivered with premium products, professional hands, and a hygienic studio — so you leave looking exactly how you feel.</p>
+    <div class="flourish"><svg viewBox="0 0 120 16"><path d="M0 8 C 30 -4, 50 20, 60 8 S 90 -4, 120 8"/></svg></div>
+  </div>
+
+  <div class="service-grid reveal">
+    <div class="service-card">
+      <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M12 2 L12 12 M6 8 L12 12 L18 8" stroke-linecap="round"/><circle cx="12" cy="15" r="6"/></svg></div>
+      <h3>Makeup</h3>
+      <ul>
+        <li>Bridal Makeup</li>
+        <li>Party Makeup</li>
+        <li>HD Makeup</li>
+        <li>Airbrush Makeup</li>
+        <li>Mehendi</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M4 4 C10 10, 14 10, 20 4 M4 20 C10 14, 14 14, 20 20" stroke-linecap="round"/></svg></div>
+      <h3>Hair</h3>
+      <ul>
+        <li>Hair Cut</li>
+        <li>Hair Styling</li>
+        <li>Hair Spa</li>
+        <li>Hair Color</li>
+        <li>Nanoplastia / Smoothening</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 6 L12 12 L16 14" stroke-linecap="round"/></svg></div>
+      <h3>Skin</h3>
+      <ul>
+        <li>Facial</li>
+        <li>Cleanup</li>
+        <li>Bleach</li>
+        <li>Skin Treatment</li>
+        <li>Skin Care</li>
+      </ul>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><svg viewBox="0 0 24 24"><path d="M9 12 L11 14 L16 9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9"/></svg></div>
+      <h3>Beauty</h3>
+      <ul>
+        <li>Waxing</li>
+        <li>Threading</li>
+        <li>Manicure</li>
+        <li>Pedicure</li>
+        <li>Nail Art</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VISUAL SERVICES GALLERY ============ -->
+<section class="gallery-services" id="gallery">
+  <div class="section-head reveal">
+    <div class="eyebrow">Services at a Glance</div>
+    <h2>See It Before You Book It</h2>
+    <p>A quick look at what each service feels like — because a picture books faster than a list.</p>
+    <div class="flourish"><svg viewBox="0 0 120 16"><path d="M0 8 C 30 -4, 50 20, 60 8 S 90 -4, 120 8"/></svg></div>
+  </div>
+
+  <div class="bento reveal">
+    <a href="#contact" class="bento-tile tile-makeup" aria-label="Bridal & Party Makeup — book now">
+      <img src="assets/gallery-makeup.jpg" alt="Bridal makeup look at RJ Parlor" loading="lazy">
+      <div class="tile-shade"></div>
+      <div class="tile-text">
+        <span class="tile-eyebrow">Makeup</span>
+        <h3>Bridal & Party Looks</h3>
+        <p>HD · Airbrush · Mehendi</p>
+      </div>
+    </a>
+
+    <a href="#contact" class="bento-tile tile-skin" aria-label="Facial & Skin Care — book now">
+      <img src="assets/gallery-skin.jpg" alt="Facial and skin treatment at RJ Parlor" loading="lazy">
+      <div class="tile-shade"></div>
+      <div class="tile-text">
+        <span class="tile-eyebrow">Skin</span>
+        <h3>Facial & Skin Care</h3>
+        <p>Cleanup · Bleach · Treatment</p>
+      </div>
+    </a>
+
+    <a href="#contact" class="bento-tile tile-hair" aria-label="Hair Styling & Spa — book now">
+      <img src="assets/gallery-hair.jpg" alt="Hair styling tools at RJ Parlor" loading="lazy">
+      <div class="tile-shade"></div>
+      <div class="tile-text">
+        <span class="tile-eyebrow">Hair</span>
+        <h3>Cut, Style & Spa</h3>
+        <p>Color · Nanoplastia</p>
+      </div>
+    </a>
+
+    <a href="#contact" class="bento-tile tile-beauty" aria-label="Nail Art & Beauty — book now">
+      <img src="assets/gallery-beauty.jpg" alt="Nail art and beauty service at RJ Parlor" loading="lazy">
+      <div class="tile-shade"></div>
+      <div class="tile-text">
+        <span class="tile-eyebrow">Beauty</span>
+        <h3>Mani, Pedi & Nail Art</h3>
+        <p>Waxing · Threading</p>
+      </div>
+    </a>
+
+    <a href="#contact" class="bento-cta">
+      <span class="eyebrow">Liked a Look?</span>
+      <div>
+        <h3>Book This Look</h3>
+        <p>Walk in today for your first-visit special.</p>
+      </div>
+      <span class="cta-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ============ OFFERS ============ -->
+<section class="offer" id="offers">
+  <div class="offer-inner reveal">
+    <div class="eyebrow">Special Walk-in Offer</div>
+    <h2>Your First Visit Deserves a Little Extra</h2>
+    <div class="offer-grid">
+      <div class="offer-card">
+        <div class="num">01 — Discount</div>
+        <h3>Walk-in Special</h3>
+        <p>A special discount reserved for every walk-in customer, every single day.</p>
+      </div>
+      <div class="offer-card">
+        <div class="num">02 — Gift</div>
+        <h3>Complimentary Service</h3>
+        <p>A free beauty add-on on selected services, on us — because pampering shouldn't stop at one.</p>
+      </div>
+      <div class="offer-card">
+        <div class="num">03 — Comfort</div>
+        <h3>Home Service</h3>
+        <p>Can't make it to the studio? Selected services are available at your doorstep.</p>
+      </div>
+    </div>
+    <div class="countdown"><span class="dot-pulse"></span>Limited slots open this week — <b>First-visit special discount + free beauty service</b> applies only on your first booking.</div>
+  </div>
+</section>
+
+<!-- ============ WHY US ============ -->
+<section class="why" id="why">
+  <div class="section-head reveal">
+    <div class="eyebrow">Why RJ Parlor</div>
+    <h2>The Details That Earn Your Trust</h2>
+  </div>
+  <div class="why-grid reveal">
+    <div class="why-item">
+      <div class="why-icon"><svg viewBox="0 0 24 24"><path d="M12 2 L15 9 L22 9 L16.5 13.5 L18.5 21 L12 16.5 L5.5 21 L7.5 13.5 L2 9 L9 9 Z"/></svg></div>
+      <h3>Premium Products</h3>
+      <p>Only trusted, high-grade brands touch your skin and hair.</p>
+    </div>
+    <div class="why-item">
+      <div class="why-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21 C4 15, 20 15, 20 21"/></svg></div>
+      <h3>Professional Staff</h3>
+      <p>Trained hands who treat every client like the only client.</p>
+    </div>
+    <div class="why-item">
+      <div class="why-icon"><svg viewBox="0 0 24 24"><path d="M12 2 L20 6 L20 12 C20 17, 16.5 20.5, 12 22 C7.5 20.5, 4 17, 4 12 L4 6 Z"/><path d="M9 12 L11 14 L15.5 9.5" stroke-linecap="round"/></svg></div>
+      <h3>Hygienic Environment</h3>
+      <p>Sanitised tools and a spotless studio, every appointment.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GLIMPSE ============ -->
+<section class="glimpse" id="glimpse">
+  <div class="glimpse-media reveal">
+    <img src="assets/poster.jpeg" alt="RJ Parlor studio glimpse">
+  </div>
+  <div class="glimpse-text reveal">
+    <div class="eyebrow">Step Inside</div>
+    <h2>A Studio Built for Slowing Down</h2>
+    <p>From bridal chairs to skin-care corners, every space at RJ Parlor is designed for one thing — letting you exhale while we take care of the rest. Come once, and you'll understand why our clients stay for years.</p>
+    <a href="#contact" class="btn btn-gold">Plan Your Visit</a>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIAL ============ -->
+<section class="testimonial">
+  <div class="reveal">
+    <div class="stars">
+      <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.6 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.6 7.4,7"/></svg>
+      <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.6 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.6 7.4,7"/></svg>
+      <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.6 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.6 7.4,7"/></svg>
+      <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.6 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.6 7.4,7"/></svg>
+      <svg viewBox="0 0 20 20"><polygon points="10,1 12.6,7 19,7.6 14,12 15.5,18.5 10,15 4.5,18.5 6,12 1,7.6 7.4,7"/></svg>
+    </div>
+    <blockquote>"Beauty is our passion, perfection is our promise — it isn't just a line on the wall here, it's what walked out with me on my wedding day."</blockquote>
+    <cite>A Bride, Dolmundai</cite>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div class="contact-info reveal">
+      <div class="eyebrow" style="color:var(--gold);font-size:12px;letter-spacing:0.3em;text-transform:uppercase;margin-bottom:14px;">Visit Us</div>
+      <h2>Come Once and<br>Stay Forever.</h2>
+      <p class="lead">Walk in for your special discount, or reach out to reserve your slot for bridal, hair, skin or beauty services.</p>
+      <div class="info-list">
+        <div class="info-row">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2 L20 6 L20 12 C20 17, 16.5 20.5, 12 22 C7.5 20.5, 4 17, 4 12 L4 6 Z"/></svg></div>
+          <div><small>Address</small><span>Dolmundai, Cuttack</span></div>
+        </div>
+        <div class="info-row">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 4 C4 14, 10 20, 20 20 L20 16 L15 15 L13 17 C10 15.5, 8.5 14, 7 11 L9 9 L8 4 Z"/></svg></div>
+          <div><small>Call</small><a href="tel:+918114312507">+91 81143 12507</a></div>
+        </div>
+        <div class="info-row">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M4 20 L5.5 15.5 C4.5 14 4 12.2 4 10.3 C4 5.7 8.3 2 12.5 2 C16.7 2 20 5.5 20 10 C20 14.5 16.7 18.3 12.3 18.3 C10.7 18.3 9.2 17.9 8 17.2 Z"/></svg></div>
+          <div><small>WhatsApp</small><a href="https://wa.me/918249911542" target="_blank" rel="noopener">+91 82499 11542</a></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-card reveal">
+      <h3>Reserve Your Slot</h3>
+      <p>Tap below to call or message us directly — our team replies fast on WhatsApp.</p>
+      <div class="contact-actions">
+        <a href="tel:+918114312507" class="call-btn"><svg viewBox="0 0 24 24"><path d="M4 4 C4 14, 10 20, 20 20 L20 16 L15 15 L13 17 C10 15.5, 8.5 14, 7 11 L9 9 L8 4 Z"/></svg>Call +91 81143 12507</a>
+        <a href="https://wa.me/918249911542" class="wa-btn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M4 20 L5.5 15.5 C4.5 14 4 12.2 4 10.3 C4 5.7 8.3 2 12.5 2 C16.7 2 20 5.5 20 10 C20 14.5 16.7 18.3 12.3 18.3 C10.7 18.3 9.2 17.9 8 17.2 Z"/></svg>WhatsApp +91 82499 11542</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Dolmundai%2C%20Cuttack" class="map-btn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2 L20 6 L20 12 C20 17, 16.5 20.5, 12 22 C7.5 20.5, 4 17, 4 12 L4 6 Z"/></svg>Get Directions</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <span class="brand-text script">RJ Parlor & Cosmetics</span>
+  <div class="flourish"><svg viewBox="0 0 120 16"><path d="M0 8 C 30 -4, 50 20, 60 8 S 90 -4, 120 8"/></svg></div>
+  <p class="small">Dolmundai, Cuttack &nbsp;·&nbsp; +91 81143 12507 &nbsp;·&nbsp; +91 82499 11542</p>
+  <p class="small">*Terms & conditions apply on all offers. © RJ Parlor & Cosmetics.</p>
+</footer>
+
+<!-- ============ FLOATING WHATSAPP ============ -->
+<a class="float-wa" href="https://wa.me/918249911542" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12.04 2.003c-5.53 0-10.02 4.49-10.02 10.02 0 1.77.46 3.5 1.34 5.02L2 22l5.11-1.34a9.96 9.96 0 0 0 4.93 1.31h.01c5.53 0 10.02-4.49 10.02-10.02 0-2.68-1.04-5.19-2.94-7.08a9.94 9.94 0 0 0-7.09-2.9zm5.86 14.32c-.25.7-1.45 1.34-2 1.42-.51.08-1.15.11-1.86-.12-.43-.13-.98-.31-1.69-.61-2.97-1.28-4.91-4.28-5.06-4.48-.15-.2-1.21-1.6-1.21-3.06s.76-2.17 1.03-2.47c.27-.3.59-.37.79-.37h.57c.18 0 .43-.07.67.51.25.6.85 2.07.92 2.22.07.15.12.33.02.53-.1.2-.15.32-.3.5-.15.18-.31.4-.44.53-.15.15-.3.32-.13.62.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.48.13.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.35.08.13.08.75-.17 1.45z"/></svg>
+</a>
+
+<script>
+  // header scroll state
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // mobile nav
+  const navToggle = document.getElementById('navToggle');
+  const siteNav = document.getElementById('siteNav');
+  navToggle.addEventListener('click', () => siteNav.classList.toggle('open'));
+  siteNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => siteNav.classList.remove('open')));
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // popup on load
+  const overlay = document.getElementById('popupOverlay');
+  const closeBtn = document.getElementById('popupClose');
+  window.addEventListener('load', () => {
+    setTimeout(() => overlay.classList.add('show'), 700);
+  });
+  function closePopup(){ overlay.classList.remove('show'); }
+  closeBtn.addEventListener('click', closePopup);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closePopup(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closePopup(); });
+</script>
+
+</body>
+</html>
